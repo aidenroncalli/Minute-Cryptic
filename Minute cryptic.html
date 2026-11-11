@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Minute Cryptic">
+<title>Minute Cryptic</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,900&family=Mulish:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#aed4ff;--card:#fff;--ink:#111;--pink:#f4d1fb;--yellow:#fdeeb0;--blue:#d2e4ff;--key:#fff;--dot:#d6e8ff;--btn:#fdeeb0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1b2433;--card:#2a3447;--ink:#f3f3f3;--pink:#6b3d78;--yellow:#7a6a24;--blue:#34527f;--key:#3a4660;--dot:#34425c;--btn:#7a6a24}}
+:root[data-theme="dark"]{--bg:#1b2433;--card:#2a3447;--ink:#f3f3f3;--pink:#6b3d78;--yellow:#7a6a24;--blue:#34527f;--key:#3a4660;--dot:#34425c;--btn:#7a6a24}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font-family:Mulish,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;touch-action:manipulation;-webkit-user-select:none;user-select:none;overflow:hidden}
+.app{width:100%;max-width:760px;height:100%;display:flex;flex-direction:column;padding:8px 14px 8px}
+header{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+header b{font-size:16px}
+.fr{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:900}
+.stage{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;min-height:0}
+.card{background:var(--card);border-radius:10px;padding:22px 20px;font-size:clamp(19px,4.6vw,28px);width:100%;margin-top:10px;line-height:1.4}
+mark{color:inherit;padding:0 1px}
+mark.ind{background:var(--pink)}mark.fod{background:var(--yellow)}mark.def{background:var(--blue)}
+.boxes{display:flex;border:3px solid #000;border-radius:10px;overflow:hidden;margin-top:26px;background:var(--card)}
+.box{width:var(--bs,58px);height:var(--bs,58px);border-right:3px solid #000;display:flex;align-items:center;justify-content:center;font-size:calc(var(--bs,58px)*.55);color:#000;background:#fff;cursor:pointer}
+.box:last-child{border-right:0}.box.act{background:#f4d1fb}.box.lock{background:#fdeeb0}
+.boxes.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.dots{display:grid;grid-template-columns:repeat(7,24px);gap:4px 11px;margin-top:26px}
+.dot{width:24px;height:24px;border-radius:50%;background:var(--dot)}.dot.on{background:#fdeeb0;box-shadow:inset 0 0 0 2px #0002}
+.dot.par{box-shadow:inset 0 0 0 2px var(--ink);background:transparent}.dot.par.on{background:#fdeeb0}
+.parlbl{grid-column:2;grid-row:2;text-align:center;font-size:18px}
+.btns{display:flex;gap:14px;margin-top:22px;align-items:center}
+.pill{font:inherit;border:3px solid #000;border-radius:999px;padding:8px 26px;background:var(--btn);color:var(--ink);box-shadow:3px 3px 0 #000;cursor:pointer;font-size:20px}
+.pill.round{width:56px;height:56px;padding:0;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.pill.ghost{background:transparent;box-shadow:none;border:3px solid #5a6a85;color:#5a6a85}
+.pill:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+.msg{min-height:22px;margin-top:10px;font-weight:700}
+.pop{position:absolute;left:50%;transform:translateX(-50%);bottom:6px;width:min(500px,94%);background:var(--card);border:3px solid #000;border-radius:18px;box-shadow:4px 4px 0 #000;padding:16px 20px;z-index:5;display:none;line-height:1.8;font-size:18px}
+.pop.show{display:block}
+.pop .top{display:flex;justify-content:space-between;margin-bottom:6px}
+.pop .x{background:none;border:0;font-size:26px;color:var(--ink);cursor:pointer;padding:0 4px}
+.opt{display:block;background:none;border:0;font-size:22px;margin:14px 0;cursor:pointer;color:var(--ink);padding:0 4px}
+.opt.i{background:linear-gradient(transparent 60%,var(--pink) 60%)}.opt.f,.opt.l{background:linear-gradient(transparent 60%,var(--yellow) 60%)}.opt.d{background:linear-gradient(transparent 60%,var(--blue) 60%)}
+hr{border:0;border-top:1px solid #0002;margin:4px 0}
+.keys{width:100%;padding-top:6px}
+.row{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
+.key{flex:1;max-width:70px;height:48px;border:0;border-radius:6px;background:var(--key);color:var(--ink);font:inherit;font-size:18px;cursor:pointer;box-shadow:0 1px 2px #0003}
+.key:active{transform:scale(.95)}
+.scr{position:absolute;inset:10px 0 0;background:var(--card);border-radius:10px;padding:14px 18px;z-index:4;display:none;flex-direction:column;align-items:center}
+.scr.show{display:flex}
+.scr .hd{display:flex;width:100%;align-items:center;gap:10px}
+.scr .hd b{flex:1;line-height:1.1;font-size:15px}
+.ib{width:38px;height:38px;border-radius:50%;border:0;background:var(--dot);color:var(--ink);font-size:18px;cursor:pointer}
+.scr .cl{width:100%;font-size:clamp(17px,4vw,24px);margin-top:16px}
+.tiles{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:auto;margin-bottom:auto;min-height:70px}
+.tile{width:56px;height:56px;border:3px solid #000;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:30px;background:#fff;color:#000;cursor:pointer}
+.tile.s{opacity:.3;text-decoration:line-through}
+.hint{font-size:14px;opacity:.7;text-align:center}
+.win{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;z-index:9;padding:20px}
+.win.show{display:flex}
+.wc{background:var(--card);border:3px solid #000;border-radius:20px;box-shadow:5px 5px 0 #000;padding:24px;max-width:460px;width:100%;line-height:1.6;text-align:center}
+.wc h2{margin:0 0 4px;font-size:34px}.wc .ans{font-size:26px;letter-spacing:3px;margin:6px 0 10px}
+.home{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px));text-align:center}
+.home.hide{display:none}
+.home .tb{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:16px}
+.hcard{background:var(--card);border:3px solid #000;border-radius:16px;box-shadow:5px 5px 0 #000;padding:38px 22px;width:100%;max-width:520px}
+.hmsg{font-size:clamp(34px,11vw,64px);line-height:1.15;word-break:break-word}
+.hsub{font-size:16px;margin-top:14px}
+.home{overflow-y:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch}.home::before,.home::after{content:"";flex:1}
+.mini{background:var(--card);border:3px solid #000;border-radius:14px;box-shadow:4px 4px 0 #000;padding:14px 16px;width:100%;max-width:520px;text-align:left;line-height:1.5;flex:none}
+.mini h3{margin:0 0 4px;font-size:20px}
+.stats{display:flex;gap:10px;width:100%;max-width:520px;flex:none}
+.stat{flex:1;border:3px solid #000;border-radius:14px;box-shadow:3px 3px 0 #000;padding:10px 4px;text-align:center}
+.stat b{display:block;font-size:30px}.stat small{font-size:12px}
+.rank{font-size:18px;margin:0}
+.hdots .dot{width:20px;height:20px}
+@media (max-width:480px){.key{height:46px}.pill{padding:8px 22px}.card{padding:18px 16px}.btns{gap:10px}}
+</style></head>
+<body>
+<div class="home" id="home">
+  <button class="ib tbtn tb" aria-label="Switch light or dark theme"></button>
+  <div class="hcard"><div class="fr hmsg" id="hmsg"></div><div class="hsub" id="hsub"></div></div>
+  <button class="pill fr" id="bPlay" style="font-size:26px;padding:10px 36px;flex:none">let’s play</button>
+  <div class="stats">
+    <div class="stat" style="background:var(--yellow)"><b class="fr" id="stStreak">0</b><small>🔥 day streak</small></div>
+    <div class="stat" style="background:var(--pink)"><b class="fr" id="stBest">0</b><small>best streak</small></div>
+    <div class="stat" style="background:var(--blue)"><b class="fr" id="stTotal">0</b><small>clues solved</small></div>
+  </div>
+  <div class="rank fr" id="rank"></div>
+  <div class="mini"><h3 class="fr">Cryptic word of the day: <span id="jTerm"></span></h3><div id="jDef"></div></div>
+  <div class="mini"><h3 class="fr">Pun of the day</h3><div id="pun"></div></div>
+  <div class="mini"><h3 class="fr">Need an excuse?</h3><div id="excuse">Tap the button for a ready-made excuse for any wrong answer.</div><button class="pill fr" id="bExcuse" style="font-size:16px;padding:6px 16px;margin-top:8px">give me one</button></div>
+  
+</div>
+<div class="app">
+<header><div style="display:flex;gap:10px;align-items:center"><button class="ib" id="bHome" aria-label="Home">⌂</button><div><b id="date"></b><br><span id="who"></span></div></div><div style="display:flex;gap:10px;align-items:center"><span id="solved"></span><button class="ib tbtn" aria-label="Switch light or dark theme"></button></div></header>
+<div class="stage" id="stage">
+  <div class="card" id="clue"></div>
+  <div class="boxes" id="boxes"></div>
+  <div class="dots" id="dots"></div>
+  <div class="btns">
+    <button class="pill round" id="bScr" aria-label="Scribble space"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M5 17c4-2 6-9 8-12 1 3-3 9 0 9s3-4 6-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+    <button class="pill fr" id="bHints">hints</button>
+    <button class="pill ghost fr" id="bCheck">check</button>
+  </div>
+  <div class="msg" id="msg"></div>
+  <div class="pop" id="pop"></div>
+  <div class="scr" id="scr">
+    <div class="hd"><b>Scribble<br>Space</b><button class="ib" id="bShuf" aria-label="Shuffle">⇄</button><button class="ib" id="bScrX" aria-label="Close">✕</button></div>
+    <div class="cl" id="scl"></div>
+    <div class="boxes" id="sboxes" style="margin-top:20px"></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="hint">Type to add letters · tap a tile to cross it out</div>
+  </div>
+</div>
+<div class="keys" id="keys"></div>
+</div>
+<div class="win" id="win"><div class="wc"><h2 class="fr">Solved!</h2><div class="ans fr" id="wAns"></div><div id="wInfo"></div><p id="wExp"></p><button class="pill fr" id="bNext">next clue</button></div></div>
+
+<script>
+// ===== SETTINGS (fill these in once you deploy; leave empty to use the built-in clues) =====
+const HOME_MESSAGE = "Hii subbuu, Happy Diwali 💛";   // ← change this text any time
+const HER_NAME = "My biggest blessing";                 // her name shows in the header
+const SUPABASE_URL = "";                // e.g. https://abcd1234.supabase.co
+const SUPABASE_KEY = "";                // the public "anon" key
+const NO_REPEAT_DAYS = 7;
+
+// ===== HOME PAGE CONTENT — edit any of these lists, keep the quotes and commas =====
+// Funny rank titles: [number of clues solved, title]
+const RANKS = [[0,"Clue Curious"],[5,"Anagram Apprentice"],[15,"Fodder Fanatic"],[30,"Indicator Inspector"],[60,"Wordplay Wizard"],[100,"Supreme Cryptic Overlord"]];
+// One shows per day, rotating through the list
+const TERMS = [
+ {term:"Fodder",def:"The letters the clue chews on. Not edible, despite the name."},
+ {term:"Indicator",def:"A tiny word that bosses the fodder around."},
+ {term:"Anagram",def:"Letters put in a blender. Press pulse."},
+ {term:"Hidden word",def:"A word playing hide and seek inside other words."},
+ {term:"Red herring",def:"A clue pretending very hard to be about something else."},
+ {term:"Definition",def:"The honest part of the clue. Very rare, treasure it."},
+ {term:"Surface reading",def:"What the clue claims to be about, to throw you off."},
+ {term:"Reversal",def:"Words walking backwards for no good reason."},
+ {term:"Setter",def:"The person who wrote the clue and is currently smiling about it."},
+ {term:"Aha moment",def:"The brief joy that arrives just before the groan."}
+];
+const PUNS = [
+ "I tried to write a clue about a bakery, but the wordplay never rose.",
+ "A hidden-word clue walks into a bar. Nobody notices.",
+ "My brain on a cryptic: 47 theories, zero answers, one cup of tea.",
+ "Why was the clue so calm? It had nothing to hide… except the answer.",
+ "I asked an anagram how it was feeling. It said, “All mixed up.”",
+ "Cryptic clues are like onions. Peel them, and something makes you cry a little."
+];
+// Tapped at random on the “Need an excuse?” card
+const EXCUSES = [
+ "The setter clearly had a bad day.",
+ "That clue was a riddle in a trench coat.",
+ "Mercury is in retrograde, and so is my reversal indicator.",
+ "I knew the answer. My brain just refused to file it.",
+ "I was robbed by a red herring.",
+ "The fodder was being suspicious, I could tell."
+];
+// ================================================================================
+// ==========================================================================================
+const SAMPLE=[
+{id:1,clue_text:"Silent, rearranged, is to pay attention",enumeration:"6",answer:"LISTEN",definition:"to pay attention",fodder:"Silent",indicator:"rearranged",indicator_type:"anagram",explanation:"SILENT rearranged gives LISTEN."},
+{id:2,clue_text:"Drink found in some of Dante and Virgil",enumeration:"3",answer:"TEA",definition:"Drink",fodder:"Dante and Virgil",indicator:"found in some of",indicator_type:"hidden",explanation:"TEA is hiding in “Dan-TE A-nd”."},
+{id:3,clue_text:"Pots returned: halt",enumeration:"4",answer:"STOP",definition:"halt",fodder:"Pots",indicator:"returned",indicator_type:"reversal",explanation:"POTS reversed is STOP."},
+{id:4,clue_text:"Bird beheaded gets a line",enumeration:"3",answer:"ROW",definition:"a line",fodder:"Bird",indicator:"beheaded",indicator_type:"deletion",explanation:"CROW without its first letter is ROW."},
+{id:5,clue_text:"Heart’s confused: it’s our planet",enumeration:"5",answer:"EARTH",definition:"our planet",fodder:"Heart",indicator:"confused",indicator_type:"anagram",explanation:"HEART confused (rearranged) gives EARTH."},
+{id:6,clue_text:"Initially, Peter eats apples — a green veg",enumeration:"3",answer:"PEA",definition:"green veg",fodder:"Peter eats apples",indicator:"Initially",indicator_type:"initials",explanation:"The first letters of Peter, Eats, Apples spell PEA."},
+{id:7,clue_text:"Notes, shaken, make rock",enumeration:"5",answer:"STONE",definition:"rock",fodder:"Notes",indicator:"shaken",indicator_type:"anagram",explanation:"NOTES shaken up gives STONE."},
+{id:8,clue_text:"Lemon, spoilt, becomes fruit",enumeration:"5",answer:"MELON",definition:"fruit",fodder:"Lemon",indicator:"spoilt",indicator_type:"anagram",explanation:"LEMON spoilt (rearranged) gives MELON."}
+];
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let CLUES=SAMPLE,c,n,letters,locked,pos,hints,show,done,scratch=[];
+
+async function loadClues(){
+  if(!SUPABASE_URL||!SUPABASE_KEY)return;
+  try{
+    const r=await fetch(SUPABASE_URL+"/rest/v1/clues?select=*",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY}});
+    const d=await r.json(); if(Array.isArray(d)&&d.length)CLUES=d;
+  }catch(e){console.error("Supabase failed, using built-in clues",e)}
+}
+function pick(){
+  const seen=store.get("seen",{}),cut=Date.now()-NO_REPEAT_DAYS*864e5;
+  let pool=CLUES.filter(x=>!(seen[x.id]>cut)&&(!c||x.id!==c.id));
+  if(!pool.length){pool=CLUES.filter(x=>!c||x.id!==c.id).sort((a,b)=>(seen[a.id]||0)-(seen[b.id]||0));if(!pool.length)pool=CLUES}
+  if(pool.length>1&&pool===CLUES){}
+  return pool[Math.floor(Math.random()*Math.min(pool.length,pool[0]&&seen[pool[0].id]>cut?1:pool.length))];
+}
+function start(){
+  c=pick(); const seen=store.get("seen",{}); seen[c.id]=Date.now(); store.set("seen",seen);
+  n=c.answer.replace(/[^A-Za-z]/g,"").length;
+  letters=Array(n).fill("");locked=Array(n).fill(false);pos=0;hints=0;done=false;scratch=[];
+  show={ind:false,fod:false,def:false};
+  $("win").classList.remove("show");$("pop").classList.remove("show");$("msg").textContent="";
+  render();
+}
+function hl(){
+  const t=c.clue_text,r=[];
+  [["indicator","ind"],["fodder","fod"],["definition","def"]].forEach(([f,k])=>{
+    if(!show[k]||!c[f])return;const i=t.toLowerCase().indexOf(c[f].toLowerCase());
+    if(i>=0)r.push([i,i+c[f].length,k]);
+  });
+  r.sort((a,b)=>a[0]-b[0]);let o="",p=0;
+  r.forEach(([s,e,k])=>{if(s<p)return;o+=esc(t.slice(p,s))+`<mark class="${k}">${esc(t.slice(s,e))}</mark>`;p=e});
+  return o+esc(t.slice(p))+" ("+esc(String(c.enumeration))+")";
+}
+function boxesHTML(){return letters.map((l,i)=>`<div class="box fr${locked[i]?" lock":i===pos?" act":""}" data-i="${i}">${l.toLowerCase()}</div>`).join("")}
+function render(){
+  $("clue").innerHTML=hl();$("scl").innerHTML=hl();
+  const bs=Math.min(58,Math.floor((Math.min(innerWidth,760)-50)/n));
+  document.documentElement.style.setProperty("--bs",bs+"px");
+  $("boxes").innerHTML=boxesHTML();$("sboxes").innerHTML=boxesHTML();
+  $("dots").innerHTML=Array.from({length:7},(_,i)=>`<span class="dot${i===1?" par":""}${i<hints?" on":""}"></span>`).join("")+'<span class="parlbl fr">par</span>';
+  $("who").textContent="Made for "+HER_NAME;
+  $("solved").textContent="Solved today: "+store.get("solved_"+new Date().toDateString(),0);
+  $("tiles").innerHTML=scratch.map((t,i)=>`<div class="tile fr${t.s?" s":""}" data-t="${i}">${t.ch.toLowerCase()}</div>`).join("");
+}
+// ---- typing
+function nextFree(from){for(let i=from;i<n;i++)if(!locked[i])return i;return -1}
+function press(k){
+  if($("scr").classList.contains("show")){
+    if(k==="⌫")scratch.pop();else if(scratch.length<14)scratch.push({ch:k,s:false});
+    return render();
+  }
+  if(done)return;
+  $("msg").textContent="";
+  if(k==="⌫"){
+    if(letters[pos]&&!locked[pos])letters[pos]="";
+    else{for(let j=pos-1;j>=0;j--)if(!locked[j]){pos=j;letters[j]="";break}}
+  }else{
+    let i=locked[pos]?nextFree(pos):pos; if(i<0)return;
+    letters[i]=k;const nx=nextFree(i+1);pos=nx>=0?nx:i;
+  }
+  render();
+}
+// ---- hints
+const TYPE_TXT={anagram:"tells us to rearrange the letters of the fodder.",hidden:"tells us the answer is hiding, in order, inside the fodder.",reversal:"tells us to read the fodder backwards.",deletion:"tells us to cut a piece off the fodder.",initials:"tells us to take the first letters of the fodder’s words."};
+function popMenu(){
+  $("pop").innerHTML=`<div class="top"><span>Select a hint</span><button class="x" data-x>✕</button></div>
+  <button class="opt i fr" data-h="ind">show indicators</button><button class="opt f fr" data-h="fod">show fodder</button><button class="opt d fr" data-h="def">show definition</button><hr><button class="opt l fr" data-h="let">show letter</button>`;
+  $("pop").classList.add("show");
+}
+function popInfo(t){$("pop").innerHTML=`<div class="top"><button class="x" data-back>←</button><button class="x" data-x>✕</button></div><div>${t}</div>`}
+function doHint(h){
+  if(h==="let"){
+    const free=letters.map((_,i)=>i).filter(i=>!locked[i]);
+    if(!free.length)return;const i=free[Math.floor(Math.random()*free.length)];
+    letters[i]=c.answer.replace(/[^A-Za-z]/g,"")[i].toUpperCase();locked[i]=true;hints++;
+    if(i===pos){const nx=nextFree(0);pos=nx>=0?nx:pos}
+    render();return;
+  }
+  if(!show[h]){show[h]=true;hints++}
+  render();
+  const txt={ind:`This clue’s indicator is “${esc(c.indicator)}”. It ${TYPE_TXT[c.indicator_type]||"points to the kind of wordplay at work."}`,
+    fod:`The fodder is “${esc(c.fodder)}”. These are the raw letters (or words) the wordplay works on.`,
+    def:`The definition is “${esc(c.definition)}”. The answer means the same thing.`}[h];
+  popInfo(txt);
+}
+// ---- check / win
+function check(){
+  if(done)return;
+  if(letters.some(l=>!l)){$("msg").textContent="Fill every box first";return}
+  if(letters.join("").toUpperCase()===c.answer.replace(/[^A-Za-z]/g,"").toUpperCase()){
+    done=true;const k="solved_"+new Date().toDateString();store.set(k,store.get(k,0)+1);bumpStreak();render();
+    $("wAns").textContent=c.answer.toUpperCase();
+    $("wInfo").textContent=hints===0?"No hints used. Brilliant!":`${hints} hint${hints>1?"s":""} used (par is 2).`;
+    $("wExp").textContent=c.explanation||"";$("wInfo").textContent+=" 🔥 "+streakNow().cur+"-day streak";
+    $("win").classList.add("show");
+  }else{
+    $("msg").textContent="Not quite — keep going!";
+    const b=$("boxes");b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake");
+  }
+}
+// ---- wiring
+const rows=["QWERTYUIOP","ASDFGHJKL","ZXCVBNM⌫"];
+$("keys").innerHTML=rows.map(r=>`<div class="row">${[...r].map(k=>`<button class="key" data-k="${k}">${k}</button>`).join("")}</div>`).join("");
+$("keys").onclick=e=>{const k=e.target.closest("[data-k]");if(k)press(k.dataset.k)};
+addEventListener("keydown",e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(/^[a-z]$/i.test(e.key))press(e.key.toUpperCase());
+  else if(e.key==="Backspace")press("⌫");
+  else if(e.key==="Enter")check();
+});
+$("boxes").onclick=e=>{const b=e.target.closest("[data-i]");if(b&&!done){pos=+b.dataset.i;render()}};
+$("bHints").onclick=popMenu;$("bCheck").onclick=check;
+$("pop").onclick=e=>{
+  if(e.target.closest("[data-x]"))$("pop").classList.remove("show");
+  else if(e.target.closest("[data-back]"))popMenu();
+  else{const h=e.target.closest("[data-h]");if(h)doHint(h.dataset.h)}
+};
+$("bScr").onclick=()=>{$("scr").classList.add("show");$("pop").classList.remove("show")};
+$("bScrX").onclick=()=>$("scr").classList.remove("show");
+$("bShuf").onclick=()=>{for(let i=scratch.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[scratch[i],scratch[j]]=[scratch[j],scratch[i]]}render()};
+$("tiles").onclick=e=>{const t=e.target.closest("[data-t]");if(t){scratch[+t.dataset.t].s=!scratch[+t.dataset.t].s;render()}};
+$("bNext").onclick=start;
+$("date").textContent=new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+addEventListener("resize",()=>c&&render());
+function setTheme(t){document.documentElement.setAttribute("data-theme",t);store.set("theme",t);document.querySelectorAll(".tbtn").forEach(b=>b.textContent=t==="dark"?"☀️":"🌙")}
+setTheme(store.get("theme",matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"));
+document.querySelectorAll(".tbtn").forEach(b=>b.onclick=()=>setTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"));
+$("hmsg").textContent=HOME_MESSAGE;$("hsub").textContent="for "+HER_NAME;
+$("bPlay").onclick=()=>$("home").classList.add("hide");
+$("bHome").onclick=()=>{$("home").classList.remove("hide");$("scr").classList.remove("show");$("pop").classList.remove("show")};
+async function loadMessage(){
+  if(!SUPABASE_URL||!SUPABASE_KEY)return;
+  try{
+    const r=await fetch(SUPABASE_URL+"/rest/v1/messages?select=text&order=created_at.desc&limit=1",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY}});
+    const d=await r.json(); if(Array.isArray(d)&&d[0]&&d[0].text)$("hmsg").textContent=d[0].text;
+  }catch(e){console.error("Message load failed",e)}
+}
+function dayKey(d){return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function yest(){const y=new Date();y.setDate(y.getDate()-1);return dayKey(y)}
+function streakNow(){const s=store.get("streak",{last:"",count:0,best:0});return {best:s.best||0,cur:(s.last===dayKey(new Date())||s.last===yest())?s.count:0}}
+function bumpStreak(){
+  const s=store.get("streak",{last:"",count:0,best:0}),t=dayKey(new Date());
+  if(s.last!==t){s.count=s.last===yest()?s.count+1:1;s.last=t;s.best=Math.max(s.best||0,s.count);store.set("streak",s)}
+  store.set("total",store.get("total",0)+1);renderHome();
+}
+function renderHome(){
+  const s=streakNow(),total=store.get("total",0),dn=Math.floor(new Date().setHours(0,0,0,0)/864e5);
+  $("stStreak").textContent=s.cur;$("stBest").textContent=s.best;$("stTotal").textContent=total;
+  let rk=RANKS[0][1];RANKS.forEach(r=>{if(total>=r[0])rk=r[1]});$("rank").textContent="Rank: "+rk;
+  const t=TERMS[dn%TERMS.length];$("jTerm").textContent=t.term;$("jDef").textContent=t.def;
+  $("pun").textContent=PUNS[dn%PUNS.length];
+}
+$("bExcuse").onclick=()=>{$("excuse").textContent=EXCUSES[Math.floor(Math.random()*EXCUSES.length)]};
+renderHome();
+loadMessage();loadClues().then(start);
+</script></body></html>
